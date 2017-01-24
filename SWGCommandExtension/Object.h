@@ -6,6 +6,7 @@
 #include <tuple>
 #include "NetworkId.h"
 #include "Transform.h"
+#include "soewrappers.h"
 
 #ifdef NDEBUG
 /*	
@@ -34,6 +35,7 @@ template<uint32_t FunctionAddress, typename Return, typename This, typename ... 
 class ThisCall {
 public:
 	typedef Return(__thiscall* client_func_t)(This, ArgumentTypes...);
+	typedef Return(__cdecl* client_func_static_t)(ArgumentTypes...);
 
 	static inline Return run(This thisPointer, ArgumentTypes ... args) {
 		static client_func_t func = reinterpret_cast<client_func_t>(FunctionAddress);
@@ -45,6 +47,11 @@ public:
 		client_func_t func = reinterpret_cast<client_func_t>(vtable[(FunctionAddress / sizeof(uint32_t*))]);
 		return func(thisPointer, std::forward<ArgumentTypes>(args)...);
 	}
+
+	static Return runOffset(This thisPointer, ArgumentTypes ... args) {
+		client_func_static_t* func = reinterpret_cast<client_func_static_t*>((char*)thisPointer + FunctionAddress);
+		return (*func)(args...);
+	}
 };
 
 template<uint32_t FunctionAddress, typename Return, typename ... ArgumentTypes>
@@ -55,58 +62,6 @@ public:
 
 		static client_func_t func = reinterpret_cast<client_func_t>(FunctionAddress);
 		return func(std::forward<ArgumentTypes>(args)...);
-	}
-};
-
-template<std::size_t Address, class newMethod_t, class original_t> 
-class HookStorage {
-public:
-	static constexpr std::size_t address = Address;
-
-	static newMethod_t newMethod;
-	static original_t original;
-};
-
-template<std::size_t Address, class newMethod_t, class original_t>
-newMethod_t HookStorage<Address, newMethod_t, original_t>::newMethod;
-
-template<std::size_t Address, class newMethod_t, class original_t>
-original_t HookStorage<Address, newMethod_t, original_t>::original = (original_t) Address;
-
-template<std::size_t, typename> struct Hook;
-
-template<std::size_t Address, class C, class R, class... Args>
-struct Hook<Address, R(C::*)(Args...)> {
-	typedef R(C::*newMethod_t)(Args...);
-
-	static R __thiscall callHook(C* object, Args... args) {
-		return (object->*(hookStorage_t::newMethod))(std::forward<Args>(args)...);
-	}
-
-	typedef decltype(&callHook) original_t;
-
-	typedef HookStorage<Address, newMethod_t, original_t> hookStorage_t;
-
-	static R run(C* thisPointer, Args... args) {
-		return hookStorage_t::original(thisPointer, std::forward<Args>(args)...);
-	}
-
-};
-
-template<std::size_t Address, class R, class... Args>
-struct Hook<Address, R(*)(Args...)> {
-	typedef R(*newMethod_t)(Args...);
-
-	static R callHook(Args... args) {
-		return hookStorage_t::newMethod(std::forward<Args>(args)...);
-	}
-
-	typedef decltype(&callHook) original_t;
-
-	typedef HookStorage<Address, newMethod_t, original_t> hookStorage_t;
-
-	static R run(Args... args) {
-		return hookStorage_t::original(std::forward<Args>(args)...);
 	}
 };
 
@@ -145,6 +100,11 @@ public:
 	template<uint32_t VirtualOffset, typename Return, typename ... ArgumentTypes>
 	Return runVirtual(ArgumentTypes ... args) const {
 		return ThisCall<VirtualOffset, Return, decltype(this), ArgumentTypes...>::runVirtual(this, std::forward<ArgumentTypes>(args)...);
+	}
+
+	template<uint32_t FunctionOffset, typename Return, typename ... ArgumentTypes>
+	Return runOffset(ArgumentTypes ... args)  {
+		return ThisCall<FunctionOffset, Return, decltype(this), ArgumentTypes...>::runOffset(this, args...);
 	}
 
 	static int initVtableData(uint32_t* dest, void* thisPointer, int size) {

@@ -271,9 +271,6 @@ soe::unicode soe::unicode::operator+(const soe::unicode & rhs) const {
 }
 
 soe::unicode& soe::unicode::operator+=(const unicode& rhs) {
-	if (this == &rhs)
-		return *this;
-
 	auto leftSize = size();
 	auto rightSize = rhs.size();
 
@@ -306,7 +303,6 @@ soe::unicode soe::operator+(const wchar_t* s, const soe::unicode& s2) {
 	int rightSize = s2.size();
 
 	soe::unicode newstr(leftSize + rightSize);
-
 
 	for (int i = 0; i < leftSize; ++i) {
 		newstr.push_back(s[i]);

@@ -14,7 +14,7 @@
 #define SOEALLOCATOR_ADDRESS 0x00AC15C0 /*for sizes > 0x80 and array boolean as false*/
 
 #define ARRAYALLOCATOR_ADDRESS 0x00AC15E0 /*soes own allocator for generic new objects with array boolean true*/
-#define ARRAYEALLOCATOR_ADDRESS 0x00AC1660
+#define ARRAYEDALLOCATOR_ADDRESS 0x00AC1660
 
 #define STRDEALLOCATOR1_ADDRESS 0x00AC1640 /*soe dealloc for sizes > 0x80 with array boolean false*/
 #define STRDEALLOCATOR2_ADDRESS 0x012EA920 /*for sizes < 0x80 looks like system deallocator, used in strings*/
@@ -58,6 +58,59 @@
 	\
 	typedef GENERATE_HOOK_THIS_TYPE_OLD(CLASS, METHOD, RETURNTYPE, ##__VA_ARGS__) CLASS ## _ ## METHOD ## _hook_t;
 
+
+
+template<std::size_t Address, class newMethod_t, class original_t>
+class HookStorage {
+public:
+	static constexpr std::size_t address = Address;
+
+	static newMethod_t newMethod;
+	static original_t original;
+};
+
+template<std::size_t Address, class newMethod_t, class original_t>
+newMethod_t HookStorage<Address, newMethod_t, original_t>::newMethod;
+
+template<std::size_t Address, class newMethod_t, class original_t>
+original_t HookStorage<Address, newMethod_t, original_t>::original = (original_t)Address;
+
+template<std::size_t, typename> struct Hook;
+
+template<std::size_t Address, class C, class R, class... Args>
+struct Hook<Address, R(C::*)(Args...)> {
+	typedef R(C::*newMethod_t)(Args...);
+
+	static R __thiscall callHook(C* object, Args... args) {
+		return (object->*(hookStorage_t::newMethod))(std::forward<Args>(args)...);
+	}
+
+	typedef decltype(&callHook) original_t;
+
+	typedef HookStorage<Address, newMethod_t, original_t> hookStorage_t;
+
+	static R run(C* thisPointer, Args... args) {
+		return hookStorage_t::original(thisPointer, std::forward<Args>(args)...);
+	}
+
+};
+
+template<std::size_t Address, class R, class... Args>
+struct Hook<Address, R(*)(Args...)> {
+	typedef R(*newMethod_t)(Args...);
+
+	static R callHook(Args... args) {
+		return hookStorage_t::newMethod(std::forward<Args>(args)...);
+	}
+
+	typedef decltype(&callHook) original_t;
+
+	typedef HookStorage<Address, newMethod_t, original_t> hookStorage_t;
+
+	static R run(Args... args) {
+		return hookStorage_t::original(std::forward<Args>(args)...);
+	}
+};
 
 template <uint32_t N> constexpr uint32_t compile_time() {
 	return N;

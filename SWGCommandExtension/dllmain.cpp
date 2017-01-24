@@ -69,6 +69,17 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 		//ATTACH_HOOK(SwgCuiCommandParserDefault::ctorHook);
 		//ATTACH_HOOK(SwgCuiCommandParserDefault::removeAliasStatic);
 		ATTACH_HOOK(SwgCuiMediatorFactorySetup::install);
+		ATTACH_HOOK(Transform::install);
+		ATTACH_HOOK(Transform::invert);
+		ATTACH_HOOK(Transform::reorthonormalize);
+		ATTACH_HOOK(Transform::rotate_l2p);
+		ATTACH_HOOK(Transform::rotateTranslate_l2p);
+		ATTACH_HOOK(Transform::rotate_p2l);
+		ATTACH_HOOK(Transform::rotateTranslate_l2pTr);
+		ATTACH_HOOK(Transform::rotateTranslate_p2l);
+		ATTACH_HOOK(Transform::yaw_l);
+		ATTACH_HOOK(Transform::pitch_l);
+		ATTACH_HOOK(Transform::roll_l);
 
 		LONG errorCode = DetourTransactionCommit();
 
@@ -97,6 +108,18 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 		DETACH_HOOK(TerrainObject::setHighLevelOfDetailThresholdHook);
 		DETACH_HOOK(TerrainObject::setLevelOfDetailThresholdHook);
 		DETACH_HOOK(GroundScene::parseMessages);
+		DETACH_HOOK(SwgCuiMediatorFactorySetup::install);
+		DETACH_HOOK(Transform::install);
+		DETACH_HOOK(Transform::invert);
+		DETACH_HOOK(Transform::reorthonormalize);
+		DETACH_HOOK(Transform::rotate_l2p);
+		DETACH_HOOK(Transform::rotateTranslate_l2p);
+		DETACH_HOOK(Transform::rotate_p2l);
+		DETACH_HOOK(Transform::rotateTranslate_l2pTr);
+		DETACH_HOOK(Transform::rotateTranslate_p2l);
+		DETACH_HOOK(Transform::yaw_l);
+		DETACH_HOOK(Transform::pitch_l);
+		DETACH_HOOK(Transform::roll_l);
 
 		DetourTransactionCommit();
 		break;

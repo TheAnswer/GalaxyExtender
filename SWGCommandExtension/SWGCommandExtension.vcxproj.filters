@@ -183,6 +183,9 @@
     <ClInclude Include="UIMessage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ConfigClientGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -231,6 +234,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EmuCommandParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigClientGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

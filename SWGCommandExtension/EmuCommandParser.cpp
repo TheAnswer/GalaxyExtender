@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#pragma warning(disable: 4800)
+
 #include "EmuCommandParser.h"
 
 #include "CuiChatParser.h"
@@ -14,6 +16,8 @@
 #include "CellProperty.h"
 #include "CollisionWorld.h"
 #include "ObjectAttributeManager.h"
+#include "Graphics.h"
+#include "ConfigClientGame.h"
 
 uint32_t EmuCommandParser::newVtable[3]; /* = { 0x161E6CC, 0x15EA3C4, 0x15EA3C8 }; for reference*/
 
@@ -28,6 +32,14 @@ void EmuCommandParser::initializeVtable() {
 float stof(const soe::unicode& str) {
 	try {
 		return std::stof(str.c_str());
+	} catch (...) {
+		return 0;
+	}
+}
+
+int stoi(const soe::unicode& str) {
+	try {
+		return std::stoi(str.c_str());
 	} catch (...) {
 		return 0;
 	}
@@ -55,12 +67,88 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 
 	auto& command = args[1];
 
-	if (command == L"octrl") {
+	if (command == L"cameraMaxZoom") {
+		float val = 1;
+
+		if (args.size() >= 3) {
+			val = stof(args[2]);
+		}
+
+		if (camera) {
+			float currentMaxZoom = ConfigClientGame::getFreeChaseCameraMaximumZoom();
+			float* settings = camera->getSettings();
+
+			for (int i = 0; i < camera->getNumberOfSettings(); ++i) {
+				float preMult = settings[i] / currentMaxZoom;
+				float newMult = preMult * val;
+
+				settings[i] = newMult;
+			}
+
+			ConfigClientGame::setFreeChaseCameraMaximumZoom(val);
+		} else {
+			resultUnicode += "null camera";
+		}
+
+		return true;
+	} else if (command == L"cameraZoomSpeed") {
+		if (args.size() < 3) {
+			resultUnicode += "not enough parameters";
+			return false;
+		}
+
+		float val = stof(args[2]);
+
+		if (camera) {
+			camera->setCameraZoomSpeed(val);
+		} else {
+			resultUnicode += "null camera";
+		}
+		
+		return true;
+	} else if (command == L"terrainShowExtents") {
+		ClientProceduralTerrainAppearance::setShowChunkExtents(!ClientProceduralTerrainAppearance::getShowChunkExtents());
+
+		return true;
+	} else if (command == L"terrainShowPassable") {
+		ClientProceduralTerrainAppearance::setShowPassable(!ClientProceduralTerrainAppearance::isShowPassable());
+
+		return true;
+#ifdef GLHACKS
+	} else if (command == L"antialias") {
+		if (args.size() < 3) {
+			resultUnicode += L"not enough parameters";
+
+			return true;
+		}
+
+		bool enable = stoi(args[2]);
+
+		if (enable && !Graphics::supportsAntiAlias()) {
+			resultUnicode += L"anti alias not supported by your graphics card";
+		} else {
+			Graphics::setAntiAlias(enable);
+
+			if (enable)
+				resultUnicode += L"set anti alias";
+			else
+				resultUnicode += L"disabled anti alias";
+		}
+
+		return true;
+#endif
+	} else if (command == L"octrl") {
 		CreatureObject* creature = Game::getPlayerCreature();
 		auto controller = creature->getController();
 
+		if (args.size() < 3) {
+			resultUnicode += L"not enough parameters";
+
+			return true;
+		}
+
 		float msg = stof(args[2]);
-		float value = args.size() > 2 ? stof(args[3]) : 0;
+		float value = args.size() > 3 ? stof(args[3]) : 0;
 
 		if (controller) {
 			controller->appendMessage(static_cast<int>(msg), value, 0);
@@ -72,7 +160,7 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 
 		return true;
 	} else if (command == L"globaldetail") {		
-		float newVal = args.size() > 1 ? stof(args[2]) : 6;
+		float newVal = args.size() > 2 ? stof(args[2]) : 6;
 		float oldVal = TerrainObject::getLevelOfDetailThreshold();
 
 		TerrainObject::setLevelOfDetailThreshold(newVal);
@@ -85,7 +173,7 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 
 		return true;
 	} else if (command == L"highdetailterrain" || command == L"hdterrain") {
-		float newVal = args.size() > 1 ? stof(args[2]) : 10;
+		float newVal = args.size() > 2 ? stof(args[2]) : 10;
 
 		float oldVal = TerrainObject::getHighLevelOfDetailThreshold();
 
@@ -99,14 +187,14 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 
 		return true;
 	} else if (command == L"radialflora") {
-		float newVal = args.size() > 1 ? stof(args[2]) : 64;
+		float newVal = args.size() > 2 ? stof(args[2]) : 64;
 		ClientProceduralTerrainAppearance::setDynamicNearFloraDistance(newVal);
 
 		resultUnicode += L"Radial Flora distance set.";
 
 		return true;
 	} else if (command == L"noncollidableflora" || command == L"ncflora") {
-		float newVal = args.size() > 1 ? stof(args[2]) : 32;
+		float newVal = args.size() > 2 ? stof(args[2]) : 32;
 		ClientProceduralTerrainAppearance::setStaticNonCollidableFloraDistance(newVal);
 
 		resultUnicode += L"Non-Collidable Flora distance set.";
@@ -114,7 +202,7 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 		return true;
 	} else if (command == L"viewdistance" || command == L"vd") {
 		if (camera) {
-			float newVal = args.size() > 1 ? stof(args[2]) : 512;
+			float newVal = args.size() > 2 ? stof(args[2]) : 512;
 
 			camera->setViewDistance(newVal);
 
@@ -123,7 +211,12 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 
 		return true;
 	} else if (command == L"overrideall" || command == L"setall") {
-		auto& setting = args[2];
+		soe::unicode setting;
+
+		if (args.size() > 2) {
+			setting = args[2];
+		}
+
 		if (setting == L"help")
 		{
 			resultUnicode += L"This command sets the overrides for all settings at once.\n";
@@ -366,5 +459,8 @@ void EmuCommandParser::showHelp(soe::unicode& resultUnicode) {
 	resultUnicode += L"/emu getradialflora - Prints the current Radial Flora Distance value to the chat.\n";
 	resultUnicode += L"</emu getncflora|/emu getnoncollidableflora> - Prints the current Non-Collidable Flora Distance value to the chat.\n";
 	resultUnicode += L"</emu setall|/emu overrideall> <default|low|medium|high|ultra> - Sets all graphics settings to preset values. Type /overrideall help for info on each preset.\n";
+	resultUnicode += L"</emu terrainShowExtents> - Toggles terrain extents view.\n";	
+	resultUnicode += L"</emu cameraMaxZoom> - Sets the max value of camera zoom.\n";
+	resultUnicode += L"</emu cameraZoomSpeed> - Sets the camera zoom speed.\n";	
 	resultUnicode += L"/emu help - This command, which lists help info on available extension commands.\n";
 }

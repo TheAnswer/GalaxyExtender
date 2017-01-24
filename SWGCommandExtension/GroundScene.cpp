@@ -5,6 +5,7 @@
 #include "Game.h"
 #include "Graphics.h"
 #include "InputMap.h"
+#include "ClientProceduralTerrainAppearance.h"
 
 void GroundScene::parseMessages(InputMap* map) {
 	MessageQueue* queue = map->getMessageQueue();
@@ -25,6 +26,9 @@ void GroundScene::parseMessages(InputMap* map) {
 			reset = true;
 			break;
 		}
+		case 138:
+			ClientProceduralTerrainAppearance::setShowChunkExtents(!ClientProceduralTerrainAppearance::getShowChunkExtents());
+			break;
 		case 228:
 			setView(5, 0);
 			reset = true;

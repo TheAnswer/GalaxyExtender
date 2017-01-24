@@ -96,6 +96,7 @@
       <ExceptionHandling>SyncCThrow</ExceptionHandling>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -128,10 +129,13 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SWGCOMMANDEXTENSION_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <AdditionalIncludeDirectories>C:\Users\TheAnswer\Documents\Visual Studio 2015\Projects\Express\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -174,6 +178,7 @@
     <ClInclude Include="CollisionWorld.h" />
     <ClInclude Include="CommandParser.h" />
     <ClInclude Include="CommandParserHistory.h" />
+    <ClInclude Include="ConfigClientGame.h" />
     <ClInclude Include="ConfigClientTerrain.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="CreatureObject.h" />
@@ -225,6 +230,7 @@
     <ClCompile Include="CellProperty.cpp" />
     <ClCompile Include="ClientProceduralTerrainAppearance.cpp" />
     <ClCompile Include="CommandParser.cpp" />
+    <ClCompile Include="ConfigClientGame.cpp" />
     <ClCompile Include="CuiChatParser.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
@@ -242,6 +248,7 @@
     </ClCompile>
     <ClCompile Include="EmuCommandParser.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="GroundScene.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -256,6 +263,7 @@
     <ClCompile Include="SwgCuiLoginScreen.cpp" />
     <ClCompile Include="SwgCuiMediatorFactorySetup.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
+    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

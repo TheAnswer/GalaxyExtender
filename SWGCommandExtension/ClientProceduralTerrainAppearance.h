@@ -29,4 +29,20 @@ public:
 	static void setDynamicNearFloraDistance(float val) {
 		ms_dynamicNearFloraDistance = val;
 	}
+
+	static void setShowChunkExtents(bool val) {
+		runStatic<0x0084A4A0, void>(val);
+	}
+
+	static bool getShowChunkExtents() {
+		return runStatic<0x0084A4B0, bool>();
+	}
+
+	static void setShowPassable(bool val) {
+		runStatic<0x0084A4C0, void>(val);
+	}
+
+	static bool isShowPassable() {
+		return runStatic<0x0084A4D0, bool>();
+	}
 };
