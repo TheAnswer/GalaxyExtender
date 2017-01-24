@@ -29,6 +29,10 @@ public:
 		getViewDistance() = value;
 	}
 
+	void setCameraMode(int val) {
+		runMethod<0x006D7C40, void>(val);
+	}
+
 	void setZoomMultiplier(float multiplier) {
 		runMethod<0x006D7EE0, void>(multiplier);
 	}
@@ -40,4 +44,5 @@ public:
 	static float getCameraZoomSpeed() {
 		return runStatic<0x006D7D30, float>();
 	}
+
 };

@@ -67,7 +67,17 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 
 	auto& command = args[1];
 
-	if (command == L"cameraMaxZoom") {
+	if (command == L"freeChaseCamera") {
+		if (!camera) {
+			resultUnicode += L"null camera";
+
+			return true;
+		}
+
+		appendMessage(125, 3);
+
+		return true;
+	} else 	if (command == L"cameraMaxZoom") {
 		float val = 1;
 
 		if (args.size() >= 3) {
@@ -138,25 +148,16 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 		return true;
 #endif
 	} else if (command == L"octrl") {
-		CreatureObject* creature = Game::getPlayerCreature();
-		auto controller = creature->getController();
-
 		if (args.size() < 3) {
 			resultUnicode += L"not enough parameters";
 
 			return true;
 		}
 
-		float msg = stof(args[2]);
+		int msg = stoi(args[2]);
 		float value = args.size() > 3 ? stof(args[3]) : 0;
 
-		if (controller) {
-			controller->appendMessage(static_cast<int>(msg), value, 0);
-		} else {
-			resultUnicode += L"null controller";
-
-			return true;
-		}
+		appendMessage(msg, value);
 
 		return true;
 	} else if (command == L"globaldetail") {		
@@ -462,5 +463,15 @@ void EmuCommandParser::showHelp(soe::unicode& resultUnicode) {
 	resultUnicode += L"</emu terrainShowExtents> - Toggles terrain extents view.\n";	
 	resultUnicode += L"</emu cameraMaxZoom> - Sets the max value of camera zoom.\n";
 	resultUnicode += L"</emu cameraZoomSpeed> - Sets the camera zoom speed.\n";	
+	resultUnicode += L"</emu freeChaseCamera> - Sets the free chase camera. Move camera witha arrow keys, shift to accelerate\n";
 	resultUnicode += L"/emu help - This command, which lists help info on available extension commands.\n";
+}
+
+void EmuCommandParser::appendMessage(int msg, float value) {
+	CreatureObject* creature = Game::getPlayerCreature();
+	auto controller = creature->getController();
+
+	if (controller) {
+		controller->appendMessage(static_cast<int>(msg), value, 0);
+	}
 }

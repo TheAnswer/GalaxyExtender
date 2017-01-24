@@ -19,4 +19,6 @@ public:
 	DEFINE_VMETHOD(0x4, performParsing);
 
 	static void showHelp(soe::unicode& resultUnicode);
+
+	static void appendMessage(int msg, float value);
 };
