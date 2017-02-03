@@ -186,6 +186,15 @@
     <ClInclude Include="ConfigClientGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SwgCuiToolbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CuiActionManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -245,5 +254,13 @@
     <ClCompile Include="ConfigClientGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SwgCuiToolbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\ui_ground_hud_toolbar.inc">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

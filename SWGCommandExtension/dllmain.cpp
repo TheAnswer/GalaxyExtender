@@ -12,6 +12,8 @@
 #include "SwgCuiLoginScreen.h"
 #include "SwgCuiCommandParserDefault.h"
 #include "SwgCuiMediatorFactorySetup.h"
+#include "SwgCuiToolbar.h"
+#include "ConfigFile.h"
 
 using namespace std;
 
@@ -80,6 +82,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 		ATTACH_HOOK(Transform::yaw_l);
 		ATTACH_HOOK(Transform::pitch_l);
 		ATTACH_HOOK(Transform::roll_l);
+		ATTACH_HOOK(SwgCuiToolbar::ctor);
+		ATTACH_HOOK(SwgCuiToolbarAction::performAction);
 
 		LONG errorCode = DetourTransactionCommit();
 
@@ -88,6 +92,9 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 
 			const BYTE newData[7] = { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 };
 			writeBytes((BYTE*)0xC8D258, newData, 7);
+
+			const BYTE numberOfItemsInToolbar = SwgCuiToolbar::getNumberOfToolbarButtons();
+			writeBytes((BYTE*)0xf64ac5, &numberOfItemsInToolbar, 1);
 			// Mid-function hooks for global detail and high detail terrain distance.
 						
 			// Show our loaded message (only displays if chat is already present).
@@ -120,6 +127,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD dwReason, LPVOID lpReserved)
 		DETACH_HOOK(Transform::yaw_l);
 		DETACH_HOOK(Transform::pitch_l);
 		DETACH_HOOK(Transform::roll_l);
+		DETACH_HOOK(SwgCuiToolbar::ctor);
+		DETACH_HOOK(SwgCuiToolbarAction::performAction);
 
 		DetourTransactionCommit();
 		break;

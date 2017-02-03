@@ -1,7 +1,6 @@
 #pragma once
 
 #include <stdio.h>
-#include <string.h>
 #include <cstdint>
 #include <tuple>
 #include "NetworkId.h"
@@ -49,7 +48,7 @@ public:
 	}
 
 	static Return runOffset(This thisPointer, ArgumentTypes ... args) {
-		client_func_static_t* func = reinterpret_cast<client_func_static_t*>((char*)thisPointer + FunctionAddress);
+		client_func_static_t* func = reinterpret_cast<client_func_static_t*>(reinterpret_cast<char*>(thisPointer) + FunctionAddress);
 		return (*func)(args...);
 	}
 };
@@ -108,14 +107,14 @@ public:
 	}
 
 	static int initVtableData(uint32_t* dest, void* thisPointer, int size) {
-		auto source = (*(uint32_t**)thisPointer) - 1;
+		auto source = *(reinterpret_cast<uint32_t**>(thisPointer)) - 1;
 		memcpy(dest, source, size);
 
 		return 0;
 	}
 
 	static int initVtableDataFrom(uint32_t* dest, void* sourceVtableFrom, int size) {
-		auto source = (uint32_t*)sourceVtableFrom - 1;
+		auto source = reinterpret_cast<uint32_t*>(sourceVtableFrom) - 1;
 		memcpy(dest, source, size);
 
 		return 0;

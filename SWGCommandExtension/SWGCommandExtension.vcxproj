@@ -180,8 +180,10 @@
     <ClInclude Include="CommandParserHistory.h" />
     <ClInclude Include="ConfigClientGame.h" />
     <ClInclude Include="ConfigClientTerrain.h" />
+    <ClInclude Include="ConfigFile.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="CreatureObject.h" />
+    <ClInclude Include="CuiActionManager.h" />
     <ClInclude Include="CuiChatParser.h" />
     <ClInclude Include="CuiChatParserStrategy.h" />
     <ClInclude Include="CuiConsoleHelper.h" />
@@ -212,6 +214,7 @@
     <ClInclude Include="SwgCuiConsole.h" />
     <ClInclude Include="SwgCuiLoginScreen.h" />
     <ClInclude Include="SwgCuiMediatorFactorySetup.h" />
+    <ClInclude Include="SwgCuiToolbar.h" />
     <ClInclude Include="TangibleObject.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TerrainObject.h" />
@@ -262,8 +265,12 @@
     <ClCompile Include="SwgCuiConsole.cpp" />
     <ClCompile Include="SwgCuiLoginScreen.cpp" />
     <ClCompile Include="SwgCuiMediatorFactorySetup.cpp" />
+    <ClCompile Include="SwgCuiToolbar.cpp" />
     <ClCompile Include="TerrainObject.cpp" />
     <ClCompile Include="Transform.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ui\ui_ground_hud_toolbar.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

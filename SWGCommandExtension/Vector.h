@@ -19,7 +19,7 @@ public:
 		memset(values, 0, sizeof(values));
 	}
 
-	Vector(const Vector& vec) {
+	inline Vector(const Vector& vec) {
 		memcpy(values, vec.values, sizeof(values));
 	}
 
@@ -54,7 +54,7 @@ public:
 		values[2] = scalar;
 	}
 
-	virtual ~Vector() {
+	~Vector() {
 	}
 
 public:

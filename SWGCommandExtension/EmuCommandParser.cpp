@@ -84,6 +84,9 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 			val = stof(args[2]);
 		}
 
+		if (val < 1)
+			val = 1;
+
 		if (camera) {
 			float currentMaxZoom = ConfigClientGame::getFreeChaseCameraMaximumZoom();
 			float* settings = camera->getSettings();
@@ -126,13 +129,13 @@ bool EmuCommandParser::parse(const soe::vector<soe::unicode>& args,
 		return true;
 #ifdef GLHACKS
 	} else if (command == L"antialias") {
-		if (args.size() < 3) {
-			resultUnicode += L"not enough parameters";
+		static bool enable = false;
 
-			return true;
+		if (args.size() > 2) {
+			enable = stoi(args[2]);
+		} else {
+			enable = !enable;
 		}
-
-		bool enable = stoi(args[2]);
 
 		if (enable && !Graphics::supportsAntiAlias()) {
 			resultUnicode += L"anti alias not supported by your graphics card";
@@ -461,8 +464,8 @@ void EmuCommandParser::showHelp(soe::unicode& resultUnicode) {
 	resultUnicode += L"</emu getncflora|/emu getnoncollidableflora> - Prints the current Non-Collidable Flora Distance value to the chat.\n";
 	resultUnicode += L"</emu setall|/emu overrideall> <default|low|medium|high|ultra> - Sets all graphics settings to preset values. Type /overrideall help for info on each preset.\n";
 	resultUnicode += L"</emu terrainShowExtents> - Toggles terrain extents view.\n";	
-	resultUnicode += L"</emu cameraMaxZoom> - Sets the max value of camera zoom.\n";
-	resultUnicode += L"</emu cameraZoomSpeed> - Sets the camera zoom speed.\n";	
+	resultUnicode += L"</emu cameraMaxZoom X> - Sets the max value of camera zoom 1-99.\n";
+	resultUnicode += L"</emu cameraZoomSpeed X> - Sets the camera zoom speed.\n";	
 	resultUnicode += L"</emu freeChaseCamera> - Sets the free chase camera. Move camera witha arrow keys, shift to accelerate\n";
 	resultUnicode += L"/emu help - This command, which lists help info on available extension commands.\n";
 }

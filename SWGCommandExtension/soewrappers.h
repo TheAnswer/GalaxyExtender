@@ -417,11 +417,12 @@ namespace soe {
 
 	template <typename storage_t, class Allocator>
 	void container_base<storage_t, Allocator>::ensureCapacity(std::size_t newSize) {
-		std::size_t oldSize = endOfStorage - start;
-		std::size_t oldFinishOffset = finish - start;
+		std::size_t oldSize = endOfStorage - start;		
 
 		if (newSize <= oldSize)
 			return;
+
+		std::size_t oldFinishOffset = finish - start;
 
 		newSize = (std::max)(newSize, oldSize * 2);
 

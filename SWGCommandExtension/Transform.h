@@ -13,11 +13,11 @@ public:
 
 	DEFINE_HOOK(0x00AB8DD0, install, originalInstall);
 
-	Vector getPosition_p() const {
+	inline Vector getPosition_p() const {
 		return Vector(matrix[0][3], matrix[1][3], matrix[2][3]);
 	}
 
-	void setPosition_p(const Vector &vec) {
+	inline void setPosition_p(const Vector &vec) {
 		matrix[0][3] = vec.getX();
 		matrix[1][3] = vec.getY();
 		matrix[2][3] = vec.getZ();
