@@ -1,26 +1,30 @@
 #include "stdafx.h"
 
 #include <windows.h>
+#include <wchar.h>
 
 #include "CuiChatParser.h"
 #include "CuiMediatorFactory.h"
 #include "SwgCuiConsole.h"
 #include "EmuCommandParser.h"
 
-template<typename String, typename Delimiter, typename Vector>
-void split(const String& s, Delimiter delim, Vector& v) {
-	auto i = 0;
-	auto pos = s.find(delim);
-	while (pos != String::npos) {
-		v.push_back(s.substr(i, pos - i));
-		i = ++pos;
-		pos = s.find(delim, pos);
+template<typename String, typename Vector>
+void split(const String& s, Vector& v) {
+	wchar_t* buffer;
+	wchar_t input[128];
 
-		if (pos == String::npos)
-			v.push_back(s.substr(i, s.length()));
+	wcscpy_s(input, sizeof(input), s.c_str());
+
+	std::size_t length = sizeof(input);
+
+	auto token = wcstok_s(static_cast<wchar_t*>(input), L" ", &buffer);
+
+	while (token) {
+		v.emplace_back(token);
+
+		token = wcstok_s(nullptr, L" ", &buffer);
 	}
 }
-
 
 bool CuiChatParser::parse(const soe::unicode& incomingCommand, soe::unicode& resultUnicode, uint32_t chatRoomID, bool useChatRoom) {
 	CuiMediator* console = CuiMediatorFactory::get("Console");
@@ -65,7 +69,7 @@ bool CuiChatParser::parse(const soe::unicode& incomingCommand, soe::unicode& res
 		} else if ((command.size() == 3 && command == L"emu") || (command.find(L"emu ") == 0)) {
 			if (!consoleActive) {
 				soe::vector<soe::unicode> args;
-				split(command, L' ', args);
+				split(command, args);
 
 				EmuCommandParser::parse(args, command, resultUnicode);
 
